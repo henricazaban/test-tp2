@@ -51,6 +51,27 @@ UserRepository.prototype.findOneById = function (id) {
  */
 UserRepository.prototype.update = function (user) {
 
+    if (!user) {
+        throw 'User object is undefined';
+    }
+
+    if (!user.id || !user.firstname || !user.lastname || !user.birthday) {
+        throw 'User object is missing information';
+    }
+
+    var userData = {
+        id: user.id,
+        firstname: user.firstname,
+        lastname: user.lastname,
+        birthday: user.birthday
+    };
+
+    this.db
+        .get('users')
+        .find({ id: userData.id })
+        .assign(userData)
+        .write()
+
 };
 
 /**
