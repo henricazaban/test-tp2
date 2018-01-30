@@ -1,7 +1,7 @@
 var UserRepository = require('../../../src/repository/UserRepository');
 
 
-describe("UserRepository", function() {
+describe("UserRepository Create", function() {
     it("should call db.write", function(){
         var mockDb = jasmine.createSpyObj('db', ['get', 'push', 'write']);
         mockDb.get.and.returnValue(mockDb);
@@ -44,4 +44,48 @@ describe("UserRepository", function() {
         expect(f).toThrow('User object is missing information')
     });
 
+
+});
+
+describe("UserRepository FindOneById", function() {
+    it("should return existing user", function(){
+        var mockDb = jasmine.createSpyObj('db', ['get', 'find', 'value']);
+        mockDb.get.and.returnValue(mockDb);
+        mockDb.find.and.returnValue(mockDb);
+        mockDb.value.and.returnValue({
+            id: "123",
+            firstname: "John",
+            lastname: "doe",
+            birthday: "2001-01-10"
+        });
+
+        var repository = new UserRepository(mockDb);
+        var user = repository.findOneById("123");
+
+        expect(user.id).toEqual("123");
+        expect(user.firstname).toEqual("John");
+        expect(user.lastname).toEqual("doe");
+        expect(user.birthday).toEqual("2001-01-10");
+        expect(mockDb.find).toHaveBeenCalledTimes(1);
+    });
+});
+
+describe("UserRepository Update", function() {
+    it("should update existing user", function(){
+        var mockDb = jasmine.createSpyObj('db', ['get', 'find','assign','write']);
+        mockDb.get.and.returnValue(mockDb);
+        mockDb.find.and.returnValue(mockDb);
+        mockDb.assign.and.returnValue(mockDb);
+
+
+        var repository = new UserRepository(mockDb);    
+        var user = repository.update({
+            id : 123,
+            firstname: 'Jean',
+            lastname : 'Dupond',
+            birthday : '2000-01-01'
+        });
+
+        expect(mockDb.write).toHaveBeenCalledTimes(1);
+    });
 });
